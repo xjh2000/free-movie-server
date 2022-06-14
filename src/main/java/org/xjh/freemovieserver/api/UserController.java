@@ -2,13 +2,13 @@ package org.xjh.freemovieserver.api;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.xjh.freemovieserver.domain.model.UserInfo;
+import org.xjh.freemovieserver.domain.model.User;
 import org.xjh.freemovieserver.service.UserService;
-import reactor.core.publisher.Mono;
 
 
 @RestController()
 @RequestMapping("/user")
+
 public class UserController {
 
 
@@ -19,17 +19,17 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public UserInfo register(@RequestBody @Validated UserInfo userInfo) {
-        return userService.register(userInfo);
+    public User register(@RequestBody @Validated User user) {
+        return userService.register(user);
     }
 
     @GetMapping("/getCurrentUser")
-    public UserInfo getCurrentUser() {
-        return new UserInfo("xjh", "123456");
+    public User getCurrentUser() {
+        return new User();
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody UserInfo userInfo) {
+    public String login(@RequestBody User user) {
         return "login";
     }
 }

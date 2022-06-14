@@ -10,12 +10,11 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class WebSecurityConfig {
 
-
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange()
-                .pathMatchers("/user/register").permitAll();
+                .pathMatchers("/user/*").permitAll();
         return http.build();
     }
 }

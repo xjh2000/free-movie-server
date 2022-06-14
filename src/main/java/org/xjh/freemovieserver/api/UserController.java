@@ -1,23 +1,26 @@
 package org.xjh.freemovieserver.api;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.xjh.freemovieserver.domain.model.UserInfo;
-import org.xjh.freemovieserver.repo.UserRepository;
+import org.xjh.freemovieserver.service.UserService;
 import reactor.core.publisher.Mono;
 
 
 @RestController()
 @RequestMapping("/user")
 public class UserController {
-    private final UserRepository userRepository;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping("/register")
-    public Mono<UserInfo> register(@RequestBody UserInfo userInfo) {
-        return userRepository.save(userInfo);
+    public UserInfo register(@RequestBody @Validated UserInfo userInfo) {
+        return userService.register(userInfo);
     }
 
     @GetMapping("/getCurrentUser")

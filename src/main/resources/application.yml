@@ -6,3 +6,15 @@ spring:
             port: 27017
             username: root
             password: root
+    redis:
+        host: redis
+        port: 6379
+
+logging:
+    level:
+        root: warn
+jwt:
+    private:
+        key: classpath:rsa.private.key
+    public:
+        key: classpath:rsa.public.key

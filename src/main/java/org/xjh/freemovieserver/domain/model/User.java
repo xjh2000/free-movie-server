@@ -13,7 +13,6 @@ import org.springframework.data.redis.core.TimeToLive;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,12 +37,10 @@ public class User implements UserDetails {
     private boolean enabled = true;
 
     @NotNull
-    @Size(min = 6, max = 20, message = "用户名长度必须在6-20之间")
     @Indexed(unique = true)
     private String username;
 
     @NotNull
-    @Size(min = 6, max = 20, message = "密码长度必须在6-20之间")
     private String password;
 
     private Set<Role> authorities = new HashSet<>();

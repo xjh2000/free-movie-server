@@ -6,3 +6,11 @@ spring:
             port: 27017
             username: root
             password: root
+logging:
+    level:
+        root: warn
+jwt:
+    private:
+        key: classpath:rsa.private.key
+    public:
+        key: classpath:rsa.public.key

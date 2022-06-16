@@ -3,13 +3,13 @@ package org.xjh.freemovieserver.domain.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.NotNull;
@@ -18,13 +18,17 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author xjh
+ */
 @Document
 @Setter
 @Getter
 @RequiredArgsConstructor
+@RedisHash("user")
 public class User implements UserDetails {
     @Id
-    private ObjectId id;
+    private String id;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -42,8 +46,10 @@ public class User implements UserDetails {
     @Size(min = 6, max = 20, message = "密码长度必须在6-20之间")
     private String password;
 
-    private Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+    private Set<Role> authorities = new HashSet<>();
 
+    @TimeToLive
+    private Long expiration;
 
     @Override
     public boolean isAccountNonExpired() {

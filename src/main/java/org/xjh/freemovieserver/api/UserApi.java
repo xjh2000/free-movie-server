@@ -3,6 +3,7 @@ package org.xjh.freemovieserver.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.xjh.freemovieserver.domain.dto.UserDto;
@@ -29,6 +30,7 @@ public class UserApi {
 
 
     @PostMapping("/register")
+    @PreAuthorize("isAnonymous()")
     @ResponseStatus(value = HttpStatus.CREATED)
     public User register(@RequestBody @Validated User user) {
         return userService.register(user);

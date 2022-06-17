@@ -23,8 +23,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
@@ -69,7 +67,19 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors();
         http.csrf().disable();
-        http.authorizeHttpRequests((authorize) -> authorize.antMatchers("/user/**").permitAll().anyRequest().authenticated()).httpBasic(withDefaults()).oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt).sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint()).accessDeniedHandler(new BearerTokenAccessDeniedHandler()));
+
+        http.authorizeHttpRequests((authorize) -> authorize
+                .antMatchers("/user/**").permitAll()
+                .anyRequest().authenticated());
+
+        http.httpBasic(withDefaults());
+
+        http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+
+        http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+                .accessDeniedHandler(new BearerTokenAccessDeniedHandler()));
 
         return http.build();
 

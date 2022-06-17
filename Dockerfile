@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre-alpine as builder
+FROM eclipse-temurin:17-jre-focal as builder
 WORKDIR application
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} application.jar
@@ -7,7 +7,7 @@ RUN java -Djarmode=layertools -jar application.jar extract
 ################################
 
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-focal
 MAINTAINER xjh <934622645@qq.com>
 WORKDIR application
 COPY --from=builder application/dependencies/ ./

@@ -50,7 +50,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class WebSecurityConfig {
     private final UserRepository userRepository;
 
-
     @Value("${jwt.public.key}")
     RSAPublicKey publicKey;
 

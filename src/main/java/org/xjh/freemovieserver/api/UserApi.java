@@ -1,13 +1,13 @@
 package org.xjh.freemovieserver.api;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.xjh.freemovieserver.domain.dto.UserDto;
 import org.xjh.freemovieserver.domain.model.User;
 import org.xjh.freemovieserver.service.UserService;
-
-import java.text.ParseException;
 
 
 /**
@@ -20,8 +20,11 @@ public class UserApi {
 
     private final UserService userService;
 
-    public UserApi(UserService userService) {
+    private final ConversionService conversionService;
+
+    public UserApi(UserService userService, ConversionService conversionService) {
         this.userService = userService;
+        this.conversionService = conversionService;
     }
 
 
@@ -32,8 +35,10 @@ public class UserApi {
     }
 
     @GetMapping("/getCurrentUser")
-    public User getCurrentUser() {
-        return userService.getCurrentUser();
+    public UserDto getCurrentUser() {
+
+        User user = userService.getCurrentUser();
+        return conversionService.convert(user, UserDto.class);
     }
 
 }

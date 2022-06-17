@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.xjh.freemovieserver.domain.model.Role;
 import org.xjh.freemovieserver.domain.model.User;
 import org.xjh.freemovieserver.repository.mongo.UserRepository;
+import org.xjh.freemovieserver.repository.redis.UserRedisRepository;
 
 import javax.validation.ValidationException;
 import java.time.LocalDateTime;
@@ -27,11 +28,13 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final UserRedisRepository userRedisRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserRedisRepository userRedisRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-
+        this.userRedisRepository = userRedisRepository;
     }
 
 
@@ -70,13 +73,14 @@ public class UserService {
         // 获取令牌
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
         Jwt jwt = (Jwt) authentication.getCredentials();
         // 获取用户唯一标识
         String userId = jwt.getClaim("userId");
-        // TODO redis 缓存处理 减轻数据库压力
+        //  redis 缓存处理 减轻数据库压力
 
         // 获取用户
-        return userRepository.findByUsername(username).orElseThrow(() -> new IllegalStateException("用户不存在"));
+        return userRedisRepository.findById(userId).orElseThrow(
+                () -> new ValidationException("缓存中没有该用户")
+        );
     }
 }

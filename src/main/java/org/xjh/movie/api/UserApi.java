@@ -1,7 +1,5 @@
 package org.xjh.movie.api;
 
-import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
 import org.xjh.movie.domain.dto.UserDto;
 import org.xjh.movie.domain.model.User;
 import org.xjh.movie.service.UserService;
@@ -9,6 +7,7 @@ import org.xjh.movie.service.UserService;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.stream.Stream;
 
 /**
  * @author xjh
@@ -25,20 +24,20 @@ public class UserApi {
 
     @GET
     @Path("/getAll")
-    public Multi<UserDto> getAll() {
+    public Stream<UserDto> getAll() {
         return userService.getAll();
     }
 
     @GET
     @Path("findByUsername/{username}")
-    public Uni<UserDto> findByUsername(String username) {
+    public UserDto findByUsername(String username) {
         return userService.findByUsername(username);
 
     }
 
     @GET
     @Path("findById/{id}")
-    public Uni<UserDto> findById(String id) {
+    public UserDto findById(String id) {
         return userService.findById(id);
 
     }
@@ -46,7 +45,7 @@ public class UserApi {
 
     @POST
     @Path("/register")
-    public Uni<UserDto> register(User user) {
+    public UserDto register(User user) {
         return userService.register(user);
     }
 

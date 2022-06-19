@@ -1,16 +1,14 @@
 package org.xjh.movie.service;
 
-import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
-import org.bson.types.ObjectId;
 import org.xjh.movie.domain.dto.UserDto;
 import org.xjh.movie.domain.mapper.UserMapper;
 import org.xjh.movie.domain.model.User;
-import org.xjh.movie.repo.UserRepository;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.WebApplicationException;
+import java.util.stream.Stream;
 
 /**
  * @author xjh
@@ -18,31 +16,39 @@ import javax.ws.rs.WebApplicationException;
  */
 @ApplicationScoped
 public class UserService {
-    @Inject
-    UserRepository userRepository;
+
     @Inject
     UserMapper userMapper;
 
-    public Uni<UserDto> findByUsername(String username) {
-        return userRepository
-                .find("username", username)
-                .firstResult()
-                .map(userMapper::toDto);
+    public UserDto findByUsername(String username) {
+        User dbUser = User.find("username", username).firstResult();
+        if (dbUser == null) {
+            throw new WebApplicationException("User not found", 404);
+        }
+        return userMapper.toDto(dbUser);
     }
 
-    public Uni<UserDto> register(User user) {
-        // TODO Internal Server Error 500 改为自定义异常返回
-        return userRepository.findByUsername(user.username)
-                .onItem().ifNotNull().failWith(() -> new WebApplicationException("用户已存在"))
-                .onItem().ifNull().switchTo(() -> userRepository.persist(user)).map(userMapper::toDto);
+    @Transactional
+    public UserDto register(User user) {
+        // TODO Internal Server Error 400 改为自定义异常返回
+        if (User.find("username", user.username).firstResult() != null) {
+            throw new WebApplicationException("User already exists", 400);
+        }
+        user.persist();
+        return userMapper.toDto(user);
     }
 
 
-    public Multi<UserDto> getAll() {
-        return userRepository.findAll().stream().map(userMapper::toDto);
+    public Stream<UserDto> getAll() {
+        return User.findAll().stream().map((user) -> userMapper.toDto((User) user));
     }
 
-    public Uni<UserDto> findById(String id) {
-        return userRepository.findById(new ObjectId(id)).map(userMapper::toDto);
+    public UserDto findById(String id) {
+        User dbUser = User.findById(Long.valueOf(id));
+        if (dbUser == null) {
+            throw new WebApplicationException("User not found", 404);
+        }
+        return userMapper.toDto(dbUser);
+
     }
 }

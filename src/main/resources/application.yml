@@ -1,26 +1,28 @@
-greeting:
-    message: "hello"
-
 quarkus:
-    mongodb:
-        database: "admin"
-        connection-string: "mongodb://root:root@mongo:27017"
-    redis:
-        hosts: "redis://redis:6379"
+    datasource:
+        db-kind: "postgresql"
+        jdbc:
+            url: "jdbc:postgresql://postgres:5432/quarkus"
+        username: "postgres"
+        password: "postgres"
+    http:
+        root-path: "/api"
+
+
+
 
 "%dev":
     quarkus:
-        mongodb:
-            database: "admin"
-            connection-string: "mongodb://root:root@localhost:27017"
-        redis:
-            hosts: "redis://localhost:6379"
+        datasource:
+            db-kind: "postgresql"
+            jdbc:
+                url: "jdbc:postgresql://localhost:5432/quarkus"
+            username: "postgres"
+            password: "postgres"
+        hibernate-orm:
+            database:
+                generation: "update"
 
-"%test":
-    quarkus:
-        mongodb:
-            database: "admin"
-            connection-string: "mongodb://root:root@localhost:27017"
-        redis:
-            hosts: "redis://localhost:6379"
-
+    hibernate-orm:
+        log:
+            sql: true

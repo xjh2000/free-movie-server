@@ -1,13 +1,15 @@
 package org.xjh.movie.api;
 
 import org.xjh.movie.domain.dto.UserDto;
-import org.xjh.movie.domain.model.User;
 import org.xjh.movie.service.UserService;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import java.util.stream.Stream;
+import javax.ws.rs.core.SecurityContext;
+import java.util.List;
 
 /**
  * @author xjh
@@ -18,13 +20,13 @@ import java.util.stream.Stream;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserApi {
 
-
     @Inject
     UserService userService;
 
     @GET
     @Path("/getAll")
-    public Stream<UserDto> getAll() {
+    @RolesAllowed("admin")
+    public List<UserDto> getAll() {
         return userService.getAll();
     }
 
@@ -46,6 +48,14 @@ public class UserApi {
     @Path("/register")
     public UserDto register(UserDto userDto) {
         return userService.register(userDto);
+    }
+
+    @POST
+    @Path("/destroy")
+    @RolesAllowed("user")
+    public void destroy(@Context SecurityContext securityContext) {
+        String username = securityContext.getUserPrincipal().getName();
+        userService.destroy(username);
     }
 
 }

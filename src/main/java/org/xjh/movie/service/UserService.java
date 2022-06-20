@@ -8,7 +8,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.WebApplicationException;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author xjh
@@ -31,17 +32,19 @@ public class UserService {
     @Transactional
     public UserDto register(UserDto userDto) {
         // TODO Internal Server Error 400 改为自定义异常返回
+        userDto.roles = Set.of("user");
         User user = userMapper.toEntity(userDto);
         if (User.find("username", user.username).firstResult() != null) {
             throw new WebApplicationException("User already exists", 400);
         }
-        user.persist();
+        User.register(user.username, user.password, user.roles);
         return userMapper.toDto(user);
     }
 
 
-    public Stream<UserDto> getAll() {
-        return User.findAll().stream().map((user) -> userMapper.toDto((User) user));
+    public List<UserDto> getAll() {
+        List<User> users = User.findAll().list();
+        return userMapper.toDto(users);
     }
 
     public UserDto findById(String id) {
@@ -51,5 +54,15 @@ public class UserService {
         }
         return userMapper.toDto(dbUser);
 
+    }
+
+    @Transactional
+    public void destroy(String username) {
+        // TODO Internal Server Error 404 改为自定义异常返回
+        User user = User.find("username", username).firstResult();
+        if (user == null) {
+            throw new WebApplicationException("User not found", 404);
+        }
+        user.delete();
     }
 }

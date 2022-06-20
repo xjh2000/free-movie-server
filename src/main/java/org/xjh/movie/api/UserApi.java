@@ -1,7 +1,12 @@
 package org.xjh.movie.api;
 
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.xjh.movie.domain.dto.UserDto;
 import org.xjh.movie.service.UserService;
+import org.xjh.movie.throwable.model.BaseError;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -45,17 +50,26 @@ public class UserApi {
 
 
     @POST
-    @Path("/register")
-    public UserDto register(UserDto userDto) {
-        return userService.register(userDto);
-    }
-
-    @POST
     @Path("/destroy")
     @RolesAllowed("user")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "成功"),
+            @APIResponse(responseCode = "400", description = "用户不存在"),
+            @APIResponse(responseCode = "401", description = "没有认证"),
+    })
     public void destroy(@Context SecurityContext securityContext) {
         String username = securityContext.getUserPrincipal().getName();
         userService.destroy(username);
+    }
+
+    @POST
+    @Path("/register")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "成功"),
+            @APIResponse(responseCode = "400", description = "用户已存在" ,content = @Content(mediaType = "application/json", schema = @Schema(implementation = BaseError.class))),
+    })
+    public UserDto register(UserDto userDto) {
+        return userService.register(userDto);
     }
 
 }

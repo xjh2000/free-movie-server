@@ -29,8 +29,9 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto register(User user) {
+    public UserDto register(UserDto userDto) {
         // TODO Internal Server Error 400 改为自定义异常返回
+        User user = userMapper.toEntity(userDto);
         if (User.find("username", user.username).firstResult() != null) {
             throw new WebApplicationException("User already exists", 400);
         }

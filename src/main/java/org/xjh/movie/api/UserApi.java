@@ -32,7 +32,6 @@ public class UserApi {
     @Path("findByUsername/{username}")
     public UserDto findByUsername(String username) {
         return userService.findByUsername(username);
-
     }
 
     @GET
@@ -45,8 +44,8 @@ public class UserApi {
 
     @POST
     @Path("/register")
-    public UserDto register(User user) {
-        return userService.register(user);
+    public UserDto register(UserDto userDto) {
+        return userService.register(userDto);
     }
 
 }
